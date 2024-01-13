@@ -3,10 +3,20 @@ import CharacterList from "./components/CharacterList";
 import CharacterDetail from "./components/CharacterDetail";
 import Navbar, { SearchResult } from "./components/Navbar";
 import { AllCharacters } from "../data/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
   const [characters, setCharacters] = useState(AllCharacters);
+  // not to fetch in this way:
+  // fetch("https://rickandmortyapi.com/api/character")
+  //   .then((res) => res.json())
+  //   .then((data) => setCharacters(data.results));
+  useEffect(() => {
+    fetch("https://rickandmortyapi.com/api/character")
+      .then((res) => res.json())
+      .then((data) => setCharacters(data.results.slice(0, 5)));
+  }, []);
+
   return (
     <div className="app">
       <Navbar>
