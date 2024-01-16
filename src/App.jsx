@@ -13,21 +13,38 @@ function App() {
   // fetch("https://rickandmortyapi.com/api/character")
   //   .then((res) => res.json())
   //   .then((data) => setCharacters(data.results));
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     try {
+  //       setIsLoading(true);
+  //       const res = await fetch("https://rickandmortyapi.com/api/character");
+  //       if (!res.ok) throw new Error("something went wrong");
+  //       const data = await res.json();
+  //       setCharacters(data.results.slice(0, 5));
+  //     } catch (err) {
+  //       toast.error(err.message);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   }
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const res = await fetch("https://rickandmortyapi.com/api/character");
-        if (!res.ok) throw new Error("something went wrong");
-        const data = await res.json();
+    setIsLoading(true);
+    fetch("https://rickandmortyapi.com/api/characterr")
+      .then((res) => {
+        if (!res.ok) throw new Error("something went wrong!!!");
+        return res.json();
+      })
+      .then((data) => {
         setCharacters(data.results.slice(0, 5));
-      } catch (err) {
+      })
+      .catch((err) => {
         toast.error(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (
