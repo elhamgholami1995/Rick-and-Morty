@@ -1,15 +1,16 @@
 import "./App.css";
 import CharacterList from "./components/CharacterList";
 import CharacterDetail from "./components/CharacterDetail";
-import Navbar, { SearchResult } from "./components/Navbar";
+import Navbar, { Search, SearchResult } from "./components/Navbar";
 import { AllCharacters } from "../data/data";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 function App() {
-  const [characters, setCharacters] = useState(AllCharacters);
+  const [characters, setCharacters] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState("");
   // -------not to fetch in this way:
   // fetch("https://rickandmortyapi.com/api/character")
   //   .then((res) => res.json())
@@ -34,22 +35,27 @@ function App() {
   // }, []);
 
   // ------error handlig with async await+axios:
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const {data} = await axios.get(
-  //         "https://rickandmortyapi.com/api/character"
-  //       );
-  //       setCharacters(data.results.slice(0, 5));
-  //     } catch (err) {
-  //       toast.error(err.response.data.error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        const { data } = await axios.get(
+          `https://rickandmortyapi.com/api/character?name=${query}`
+        );
+        setCharacters(data.results.slice(0, 5));
+      } catch (err) {
+        setCharacters([]);
+        toast.error(err.response.data.error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    // if (query.length < 3) {
+    //   setCharacters([]);
+    //   return;
+    // }
+    fetchData();
+  }, [query]);
 
   // --------------error handling with then-catch+fetch:
   // useEffect(() => {
@@ -69,23 +75,24 @@ function App() {
   // }, []);
 
   // ----------error handling with then catch+axios:
-  useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get("https://rickandmortyapi.com/api/characterr")
-      .then(({ data }) => {
-        setCharacters(data.results.slice(0, 5));
-      })
-      .catch((err) => {
-        toast.error(err.response.data.error);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   axios
+  //     .get("https://rickandmortyapi.com/api/characterr")
+  //     .then(({ data }) => {
+  //       setCharacters(data.results.slice(0, 5));
+  //     })
+  //     .catch((err) => {
+  //       toast.error(err.response.data.error);
+  //     })
+  //     .finally(() => setIsLoading(false));
+  // }, []);
 
   return (
     <div className="app">
       <Toaster />
       <Navbar>
+        <Search query={query} setQuery={setQuery} />
         <SearchResult numOfResult={characters.length} />
       </Navbar>
       <Main>
