@@ -1,30 +1,68 @@
 import { ArrowUpCircleIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
-import { Character, episodes } from "../../data/data";
+import { episodes } from "../../data/data";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Loader from "./Loader";
+import toast from "react-hot-toast";
 
-function CharacterDetail() {
+function CharacterDetail({ selectedId }) {
+  const [character, setCharacter] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true);
+        setCharacter(null);
+        const { data } = await axios.get(
+          `https://rickandmortyapi.com/api/character/${selectedId}`
+        );
+        setCharacter(data);
+      } catch (error) {
+        toast.error(error.response.data.error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    if (selectedId) fetchData();
+  }, [selectedId]);
+
+  if (isLoading)
+    return (
+      <div style={{ flex: 1 }}>
+        <Loader />
+      </div>
+    );
+
+  if (!character || !selectedId)
+    return (
+      <div style={{ flex: 1, color: "var(--slate-300)" }}>
+        please select a character.
+      </div>
+    );
   return (
     <div style={{ flex: 1 }}>
       <div className="character-detail">
         <img
-          src={Character.image}
-          alt={Character.name}
+          src={character.image}
+          alt={character.name}
           className="character-detail__img"
         />
         <div className="character-detail__info">
           <h3 className="name">
-            <span>{Character.gender === "Male" ? "👨" : "👩"}</span>
-            <span> {Character.name}</span>
+            <span>{character.gender === "Male" ? "👨" : "👩"}</span>
+            <span> {character.name}</span>
           </h3>
           <div className="info">
             <span
-              className={`status ${Character.status === "Dead" ? "red" : ""}`}
+              className={`status ${character.status === "Dead" ? "red" : ""}`}
             ></span>
-            <span> {Character.status} </span>
-            <span>- {Character.species}</span>
+            <span> {character.status} </span>
+            <span>- {character.species}</span>
           </div>
           <div className="location">
             <p>Last Known location :</p>
-            <p>{Character.location.name}</p>
+            <p>{character.location.name}</p>
           </div>
           <div className="actions">
             <button className="btn btn--primary">Add to Favorite</button>
