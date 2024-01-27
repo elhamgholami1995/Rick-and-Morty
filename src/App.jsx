@@ -1,7 +1,7 @@
 import "./App.css";
 import CharacterList from "./components/CharacterList";
 import CharacterDetail from "./components/CharacterDetail";
-import Navbar, { Search, SearchResult } from "./components/Navbar";
+import Navbar, { Favorites, Search, SearchResult } from "./components/Navbar";
 import { AllCharacters } from "../data/data";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -12,6 +12,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const [favorites, setFavorites] = useState([]);
   // -------not to fetch in this way:
   // fetch("https://rickandmortyapi.com/api/character")
   //   .then((res) => res.json())
@@ -43,7 +44,7 @@ function App() {
         const { data } = await axios.get(
           `https://rickandmortyapi.com/api/character?name=${query}`
         );
-        setCharacters(data.results.slice(0, 5));
+        setCharacters(data.results.slice(0, 6));
       } catch (err) {
         setCharacters([]);
         toast.error(err.response.data.error);
@@ -92,12 +93,19 @@ function App() {
   const handleSelectCharacter = (id) => {
     setSelectedId((prevId) => (prevId === id ? null : id));
   };
+  const handleAddFavorite = (char) => {
+    setFavorites((preFav) => [...preFav, char]);
+  };
+
+  const isAddedToFavorite = favorites.map((fav) => fav.id).includes(selectedId);
+
   return (
     <div className="app">
       <Toaster />
       <Navbar>
         <Search query={query} setQuery={setQuery} />
         <SearchResult numOfResult={characters.length} />
+        <Favorites numOfFavorites={favorites.length} />
       </Navbar>
       <Main>
         <CharacterList
@@ -106,7 +114,11 @@ function App() {
           isLoading={isLoading}
           onSelectCharacter={handleSelectCharacter}
         />
-        <CharacterDetail selectedId={selectedId} />
+        <CharacterDetail
+          selectedId={selectedId}
+          onAddFavorite={handleAddFavorite}
+          isAddedToFavorite={isAddedToFavorite}
+        />
       </Main>
     </div>
   );
