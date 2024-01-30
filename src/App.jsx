@@ -6,6 +6,7 @@ import { AllCharacters } from "../data/data";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import Modal from "./components/Modal";
 
 function App() {
   const [characters, setCharacters] = useState([]);
@@ -105,16 +106,24 @@ function App() {
   const handleAddFavorite = (char) => {
     setFavorites((preFav) => [...preFav, char]);
   };
-
+  const handleDeleteFavorite = (id) => {
+    setFavorites((preFav) => preFav.filter((fav) => fav.id !== id));
+  };
   const isAddedToFavorite = favorites.map((fav) => fav.id).includes(selectedId);
 
   return (
     <div className="app">
       <Toaster />
+      {/* <Modal title="modal name" open={true}>
+        test
+      </Modal> */}
       <Navbar>
         <Search query={query} setQuery={setQuery} />
         <SearchResult numOfResult={characters.length} />
-        <Favorites numOfFavorites={favorites.length} />
+        <Favorites
+          favorites={favorites}
+          onDeleteFavorite={handleDeleteFavorite}
+        />
       </Navbar>
       <Main>
         <CharacterList
