@@ -13,7 +13,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState(
+    () => JSON.parse(localStorage.getItem("FAVORITES")) || []
+  );
   // -------not to fetch in this way:
   // fetch("https://rickandmortyapi.com/api/character")
   //   .then((res) => res.json())
@@ -68,7 +70,9 @@ function App() {
       controller.abort();
     };
   }, [query]);
-
+  useEffect(() => {
+    localStorage.setItem("FAVORITES", JSON.stringify(favorites));
+  }, [favorites]);
   // --------------error handling with then-catch+fetch:
   // useEffect(() => {
   //   setIsLoading(true);
