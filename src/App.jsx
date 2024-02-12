@@ -7,11 +7,14 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Modal from "./components/Modal";
+import useCharacters from "./hooks/useCharacters";
 
 function App() {
-  const [characters, setCharacters] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const { isLoading, characters } = useCharacters(
+    "https://rickandmortyapi.com/api/character?name",
+    query
+  );
   const [selectedId, setSelectedId] = useState(null);
   const [favorites, setFavorites] = useState(
     () => JSON.parse(localStorage.getItem("FAVORITES")) || []
@@ -40,36 +43,7 @@ function App() {
   // }, []);
 
   // ------error handlig with async await+axios:
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    async function fetchData() {
-      try {
-        setIsLoading(true);
-        const { data } = await axios.get(
-          `https://rickandmortyapi.com/api/character?name=${query}`,
-          { signal }
-        );
-        setCharacters(data.results.slice(0, 6));
-      } catch (err) {
-        if (!axios.isCancel()) {
-          setCharacters([]);
-          toast.error(err.response.data.error);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    // if (query.length < 3) {
-    //   setCharacters([]);
-    //   return;
-    // }
 
-    fetchData();
-    return () => {
-      controller.abort();
-    };
-  }, [query]);
   useEffect(() => {
     localStorage.setItem("FAVORITES", JSON.stringify(favorites));
   }, [favorites]);
