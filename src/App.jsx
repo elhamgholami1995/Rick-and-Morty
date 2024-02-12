@@ -8,6 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import Modal from "./components/Modal";
 import useCharacters from "./hooks/useCharacters";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -16,67 +17,7 @@ function App() {
     query
   );
   const [selectedId, setSelectedId] = useState(null);
-  const [favorites, setFavorites] = useState(
-    () => JSON.parse(localStorage.getItem("FAVORITES")) || []
-  );
-  // -------not to fetch in this way:
-  // fetch("https://rickandmortyapi.com/api/character")
-  //   .then((res) => res.json())
-  //   .then((data) => setCharacters(data.results));
-
-  // --------error handling with async await+fetch:
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     try {
-  //       setIsLoading(true);
-  //       const res = await fetch("https://rickandmortyapi.com/api/character");
-  //       if (!res.ok) throw new Error("something went wrong");
-  //       const data = await res.json();
-  //       setCharacters(data.results.slice(0, 5));
-  //     } catch (err) {
-  //       toast.error(err.message);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  //   fetchData();
-  // }, []);
-
-  // ------error handlig with async await+axios:
-
-  useEffect(() => {
-    localStorage.setItem("FAVORITES", JSON.stringify(favorites));
-  }, [favorites]);
-  // --------------error handling with then-catch+fetch:
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   fetch("https://rickandmortyapi.com/api/character")
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error("something went wrong!!!");
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       setCharacters(data.results.slice(0, 5));
-  //     })
-  //     .catch((err) => {
-  //       toast.error(err.message);
-  //     })
-  //     .finally(() => setIsLoading(false));
-  // }, []);
-
-  // ----------error handling with then catch+axios:
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   axios
-  //     .get("https://rickandmortyapi.com/api/characterr")
-  //     .then(({ data }) => {
-  //       setCharacters(data.results.slice(0, 5));
-  //     })
-  //     .catch((err) => {
-  //       toast.error(err.response.data.error);
-  //     })
-  //     .finally(() => setIsLoading(false));
-  // }, []);
+  const [favorites, setFavorites] = useLocalStorage("Favorites", []);
 
   const handleSelectCharacter = (id) => {
     setSelectedId((prevId) => (prevId === id ? null : id));
@@ -128,3 +69,68 @@ function Main({ children }) {
 
 // props drilling : a,b,c,d
 // characters => app => main => characterlist
+
+//---------------------------------------------------------------------------------
+// -------not to fetch in this way:
+// fetch("https://rickandmortyapi.com/api/character")
+//   .then((res) => res.json())
+//   .then((data) => setCharacters(data.results));
+
+// --------error handling with async await+fetch:
+// useEffect(() => {
+//   async function fetchData() {
+//     try {
+//       setIsLoading(true);
+//       const res = await fetch("https://rickandmortyapi.com/api/character");
+//       if (!res.ok) throw new Error("something went wrong");
+//       const data = await res.json();
+//       setCharacters(data.results.slice(0, 5));
+//     } catch (err) {
+//       toast.error(err.message);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   }
+//   fetchData();
+// }, []);
+
+// ------error handlig with async await+axios:(move to usecharacter custom hooks :) )
+
+// --------------error handling with then-catch+fetch:
+// useEffect(() => {
+//   setIsLoading(true);
+//   fetch("https://rickandmortyapi.com/api/character")
+//     .then((res) => {
+//       if (!res.ok) throw new Error("something went wrong!!!");
+//       return res.json();
+//     })
+//     .then((data) => {
+//       setCharacters(data.results.slice(0, 5));
+//     })
+//     .catch((err) => {
+//       toast.error(err.message);
+//     })
+//     .finally(() => setIsLoading(false));
+// }, []);
+
+// ----------error handling with then catch+axios:
+// useEffect(() => {
+//   setIsLoading(true);
+//   axios
+//     .get("https://rickandmortyapi.com/api/characterr")
+//     .then(({ data }) => {
+//       setCharacters(data.results.slice(0, 5));
+//     })
+//     .catch((err) => {
+//       toast.error(err.response.data.error);
+//     })
+//     .finally(() => setIsLoading(false));
+// }, []);
+
+//move to useLocalstorage custom hook :)
+// const [favorites, setFavorites] = useState(
+//   () => JSON.parse(localStorage.getItem("FAVORITES")) || []
+// );
+// useEffect(() => {
+//   localStorage.setItem("FAVORITES", JSON.stringify(favorites));
+// }, [favorites]);
